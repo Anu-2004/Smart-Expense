@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="center-card">
+
+    <div class="logo-circle">
+
+        <i class="fa-solid fa-calendar-days"></i>
+
+    </div>
+
+    <h2>Expense Period</h2>
+
+    <p class="text-muted">
+
+        Select Daily, Weekly or Monthly.
+
+        The selected period will be locked.
+
+    </p>
+
+
+    <form method="POST">
+
+        <div class="period-grid">
+
+            <button
+                type="submit"
+                name="period"
+                value="daily"
+                class="period-btn">
+
+                <i class="fa-solid fa-calendar-day"></i>
+
+                <strong>Daily</strong>
+
+                <small>
+                    Daily expenses
+                </small>
+
+            </button>
+
+
+            <button
+                type="submit"
+                name="period"
+                value="weekly"
+                class="period-btn">
+
+                <i class="fa-solid fa-calendar-week"></i>
+
+                <strong>Weekly</strong>
+
+                <small>
+                    Weekly expenses
+                </small>
+
+            </button>
+
+
+            <button
+                type="submit"
+                name="period"
+                value="monthly"
+                class="period-btn">
+
+                <i class="fa-solid fa-calendar"></i>
+
+                <strong>Monthly</strong>
+
+                <small>
+                    Monthly expenses
+                </small>
+
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <div class="locked-box mt-4">
+
+        <i class="fa-solid fa-lock"></i>
+
+        Current Locked Period:
+
+        <strong>
+            {{ profile.period.title() }}
+        </strong>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <h2>
+        <i class="fa-solid fa-receipt"></i>
+        One Item Expense
+    </h2>
+
+    <p class="text-muted">
+
+        Locked Period:
+
+        <strong>
+            {{ period.title() }}
+        </strong>
+
+    </p>
+
+
+    <form method="POST">
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+
+                <label>Item Name</label>
+
+                <input
+                    class="form-control"
+                    name="item_name"
+                    placeholder="Milk / Travel / Food"
+                    required>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <label>Amount</label>
+
+                <input
+                    class="form-control"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    name="amount"
+                    placeholder="₹ Amount"
+                    required>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <label>Category</label>
+
+                <select
+                    class="form-select"
+                    name="category">
+
+                    <option>Food</option>
+                    <option>Travel</option>
+                    <option>Shopping</option>
+                    <option>Bills</option>
+                    <option>Education</option>
+                    <option>Health</option>
+                    <option>Entertainment</option>
+                    <option>Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-12">
+
+                <button
+                    class="btn btn-primary btn-lg">
+
+                    <i class="fa-solid fa-save"></i>
+
+                    Save Expense
+
+                </button>
+
+
+                <a
+                    href="{{ url_for('view_expenses') }}"
+                    class="btn btn-outline-secondary btn-lg">
+
+                    View Expenses
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

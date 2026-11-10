@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <div>
+
+        <h1>
+            Notifications
+        </h1>
+
+        <p>
+            Budget alerts and system notifications.
+        </p>
+
+    </div>
+
+    <form method="POST"
+          action="{{ url_for(
+              'mark_notifications_read'
+          ) }}">
+
+        <button class="secondary-btn">
+            Mark All Read
+        </button>
+
+    </form>
+
+</div>
+
+
+<div class="notification-list">
+
+    {% if notifications %}
+
+        {% for notification in notifications %}
+
+        <div class="
+            notification
+            {{ notification.level }}
+            {% if not notification.is_read %}
+                unread
+            {% endif %}
+        ">
+
+            <div class="notification-icon">
+
+                {% if notification.level == "danger" %}
+
+                    🚨
+
+                {% elif notification.level == "warning" %}
+
+                    ⚠️
+
+                {% else %}
+
+                    🔔
+
+                {% endif %}
+
+            </div>
+
+            <div>
+
+                <h3>
+                    {{ notification.title }}
+                </h3>
+
+                <p>
+                    {{ notification.message }}
+                </p>
+
+                <small>
+                    {{ notification.created_at.strftime(
+                        "%d-%m-%Y %I:%M %p"
+                    ) }}
+                </small>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="panel empty">
+
+            No notifications yet.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

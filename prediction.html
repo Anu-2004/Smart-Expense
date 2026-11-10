@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <div>
+
+        <h1>
+            Budget Prediction
+        </h1>
+
+        <p>
+            Predict future spending using your expense history.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="stat-card budget-card">
+
+        <span>
+            Predicted Next Month Expense
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(predicted) }}
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card expense-card">
+
+        <span>
+            70% Expense Limit
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(limit) }}
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card
+        {% if status == 'High Risk' %}
+            expense-card
+        {% elif status == 'Medium Risk' %}
+            budget-card
+        {% else %}
+            saving-card
+        {% endif %}">
+
+        <span>
+            Prediction Status
+        </span>
+
+        <strong>
+            {{ status }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<div class="panel prediction-panel">
+
+    <div class="prediction-icon">
+        🔮
+    </div>
+
+    <h2>
+        Prediction Insight
+    </h2>
+
+    <p>
+        {{ message }}
+    </p>
+
+    {% if status == "High Risk" %}
+
+        <div class="alert-box danger">
+
+            ⚠️ Your future spending may exceed
+            the recommended budget.
+
+        </div>
+
+    {% elif status == "Medium Risk" %}
+
+        <div class="alert-box warning">
+
+            ⚠️ Spending is approaching the
+            budget limit.
+
+        </div>
+
+    {% else %}
+
+        <div class="alert-box success">
+
+            ✓ Your predicted spending is
+            currently under control.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<div class="panel">
+
+    <h2>
+        How Prediction Works
+    </h2>
+
+    <ol class="prediction-list">
+
+        <li>
+            Collect historical expense records.
+        </li>
+
+        <li>
+            Group expenses month-wise.
+        </li>
+
+        <li>
+            Analyze monthly spending trend.
+        </li>
+
+        <li>
+            Estimate the next month's spending.
+        </li>
+
+        <li>
+            Compare prediction with the 70% budget limit.
+        </li>
+
+        <li>
+            Display Low, Medium or High Risk.
+        </li>
+
+    </ol>
+
+</div>
+
+{% endblock %}

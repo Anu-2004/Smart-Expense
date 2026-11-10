@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <h2>
+        <i class="fa-solid fa-list"></i>
+        Multiple Item Expense
+    </h2>
+
+    <p class="text-muted">
+
+        Period:
+
+        <strong>
+            {{ period.title() }}
+        </strong>
+
+    </p>
+
+
+    <form method="POST">
+
+        <div id="items">
+
+            <div class="row g-2 item-row mb-2">
+
+                <div class="col-md-7">
+
+                    <input
+                        class="form-control"
+                        name="item_name[]"
+                        placeholder="Item Name"
+                        required>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <input
+                        class="form-control amount-input"
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        name="amount[]"
+                        placeholder="Amount"
+                        required>
+
+                </div>
+
+
+                <div class="col-md-1">
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger remove">
+
+                        ×
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="btn btn-outline-primary"
+            id="addRow">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Add Item
+
+        </button>
+
+
+        <div class="mt-4">
+
+            <label>Category</label>
+
+            <select
+                class="form-select"
+                name="category">
+
+                <option>Shopping</option>
+                <option>Food</option>
+                <option>Travel</option>
+                <option>Bills</option>
+                <option>Education</option>
+                <option>Health</option>
+                <option>Other</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="total-box mt-4">
+
+            Total:
+
+            <strong>
+                ₹<span id="total">0.00</span>
+            </strong>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="btn btn-primary btn-lg mt-3">
+
+            <i class="fa-solid fa-save"></i>
+
+            Save All Items
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+const items = document.getElementById("items");
+
+const total = document.getElementById("total");
+
+const addRow = document.getElementById("addRow");
+
+
+function calculateTotal() {
+
+    let value = 0;
+
+    document.querySelectorAll(".amount-input").forEach(
+        function(input) {
+
+            value += parseFloat(input.value) || 0;
+
+        }
+    );
+
+    total.textContent = value.toFixed(2);
+
+}
+
+
+addRow.addEventListener(
+    "click",
+    function() {
+
+        const row =
+            document.querySelector(".item-row")
+            .cloneNode(true);
+
+        row.querySelectorAll("input").forEach(
+            function(input) {
+
+                input.value = "";
+
+            }
+        );
+
+        items.appendChild(row);
+
+    }
+);
+
+
+items.addEventListener(
+    "input",
+    calculateTotal
+);
+
+
+items.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target.classList.contains("remove")
+            &&
+            document.querySelectorAll(".item-row").length > 1
+        ) {
+
+            event.target
+                .closest(".item-row")
+                .remove();
+
+            calculateTotal();
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

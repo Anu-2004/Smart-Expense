@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <div>
+
+        <h1>
+            My Profile
+        </h1>
+
+        <p>
+            Manage your personal and financial information.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="profile-grid">
+
+    <div class="profile-card">
+
+        <div class="profile-avatar">
+            👤
+        </div>
+
+        <h2>
+            {{ user.name }}
+        </h2>
+
+        <p>
+            {{ user.email }}
+        </p>
+
+        <p>
+            {{ user.phone or "Phone not added" }}
+        </p>
+
+    </div>
+
+
+    <div class="form-panel">
+
+        <form method="POST">
+
+            <label>
+                Full Name
+            </label>
+
+            <input
+                name="name"
+                value="{{ user.name }}"
+                required
+            >
+
+
+            <label>
+                Email ID
+            </label>
+
+            <input
+                value="{{ user.email }}"
+                disabled
+            >
+
+
+            <label>
+                Phone Number
+            </label>
+
+            <input
+                name="phone"
+                value="{{ user.phone or '' }}"
+            >
+
+
+            <label>
+                Monthly Income
+            </label>
+
+            <input
+                type="number"
+                step="0.01"
+                name="salary"
+                value="{{ user.salary }}"
+            >
+
+
+            <label>
+                Location
+            </label>
+
+            <input
+                name="location"
+                value="{{ user.location or '' }}"
+            >
+
+
+            <label>
+                Gender
+            </label>
+
+            <select name="gender">
+
+                <option value="">
+                    Select
+                </option>
+
+                <option
+                    {% if user.gender == "Male" %}
+                    selected
+                    {% endif %}
+                >
+                    Male
+                </option>
+
+                <option
+                    {% if user.gender == "Female" %}
+                    selected
+                    {% endif %}
+                >
+                    Female
+                </option>
+
+                <option
+                    {% if user.gender == "Other" %}
+                    selected
+                    {% endif %}
+                >
+                    Other
+                </option>
+
+            </select>
+
+
+            <button class="primary-btn">
+                Save Profile
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

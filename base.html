@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Smart Expense Tracker
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+{% if session.get("user_id") %}
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                💰
+            </div>
+
+            <div>
+                <strong>
+                    Smart Expense
+                </strong>
+
+                <small>
+                    Budget Prediction
+                </small>
+            </div>
+
+        </div>
+
+        <nav>
+
+            <a href="{{ url_for('dashboard') }}">
+                🏠 Dashboard
+            </a>
+
+            <a href="{{ url_for('expense') }}">
+                ➕ Add Expense
+            </a>
+
+            <a href="{{ url_for('expenses') }}">
+                📋 Expenses
+            </a>
+
+            <a href="{{ url_for('savings') }}">
+                💵 Savings
+            </a>
+
+            <a href="{{ url_for('analytics') }}">
+                📊 Analytics
+            </a>
+
+            <a href="{{ url_for('prediction') }}">
+                🔮 Budget Prediction
+            </a>
+
+            <a href="{{ url_for('notifications') }}">
+                🔔 Notifications
+            </a>
+
+            <a href="{{ url_for('profile') }}">
+                👤 Profile
+            </a>
+
+            <a href="{{ url_for('report_pdf') }}">
+                📄 PDF Report
+            </a>
+
+        </nav>
+
+        <a href="{{ url_for('logout') }}" class="nav-link"
+                 style="color:white; padding:12px;">
+            🚪Logout
+        </a>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h2>
+                    Smart Expense Tracker
+                </h2>
+
+                <span>
+                    Track Today • Plan Tomorrow • Build Your Future
+                </span>
+
+            </div>
+
+            <div class="user-mini">
+
+                👤
+
+                {% if session.get("user_id") %}
+                    {{ session.get("user_name", "") }}
+                {% endif %}
+
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            {% with messages = get_flashed_messages(
+                with_categories=true
+            ) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="flash {{ category }}">
+
+                            {{ message }}
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+{% else %}
+
+    {% with messages = get_flashed_messages(
+        with_categories=true
+    ) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="flash {{ category }}">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+    {% block auth_content %}
+    {% endblock %}
+
+{% endif %}
+
+
+<script>
+
+function playAlertSound() {
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        const context =
+            new AudioContext();
+
+        const oscillator =
+            context.createOscillator();
+
+        const gain =
+            context.createGain();
+
+        oscillator.type = "sine";
+
+        oscillator.frequency.value = 880;
+
+        gain.gain.value = 0.15;
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            context.destination
+        );
+
+        oscillator.start();
+
+        setTimeout(
+            function() {
+
+                oscillator.stop();
+
+            },
+            600
+        );
+
+    } catch (error) {
+
+        console.log(
+            "Alert sound unavailable"
+        );
+
+    }
+
+}
+
+
+function showBudgetAlert(
+    title,
+    message
+) {
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.className =
+        "budget-popup";
+
+    box.innerHTML = `
+
+        <div class="popup-icon">
+            🔔
+        </div>
+
+        <div>
+
+            <h3>
+                ${title}
+            </h3>
+
+            <p>
+                ${message}
+            </p>
+
+        </div>
+
+        <button
+            onclick="this.parentElement.remove()">
+            ×
+        </button>
+
+    `;
+
+    document.body.appendChild(
+        box
+    );
+
+    playAlertSound();
+
+}
+
+
+{% if session.get("user_id") %}
+
+setTimeout(
+    function() {
+
+        fetch(
+            "{{ url_for('latest_alert') }}"
+        )
+        .then(
+            response => response.json()
+        )
+        .then(
+            data => {
+
+                if (
+                    data.level &&
+                    data.percentage >= 70
+                ) {
+
+                    showBudgetAlert(
+                        data.title,
+                        data.message
+                    );
+
+                }
+
+            }
+        )
+        .catch(
+            error =>
+                console.log(error)
+        );
+
+    },
+    1000
+);
+
+{% endif %}
+
+</script>
+
+</body>
+
+</html>

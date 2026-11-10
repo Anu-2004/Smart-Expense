@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="center-card">
+
+    <div class="logo-circle">
+
+        <i class="fa-solid fa-cart-shopping"></i>
+
+    </div>
+
+    <h2>Choose Expense Type</h2>
+
+    <p class="text-muted">
+
+        Current Period:
+
+        <strong>
+            {{ period.title() }}
+        </strong>
+
+    </p>
+
+
+    <div class="row g-4 mt-3">
+
+        <div class="col-md-6">
+
+            <a
+                class="feature-card"
+                href="{{ url_for('add_one') }}">
+
+                <i class="fa-solid fa-receipt"></i>
+
+                <h4>One Item</h4>
+
+                <p>
+                    Add one expense item.
+                </p>
+
+            </a>
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <a
+                class="feature-card"
+                href="{{ url_for('add_multiple') }}">
+
+                <i class="fa-solid fa-cart-shopping"></i>
+
+                <h4>Multiple Items</h4>
+
+                <p>
+                    Add many items together.
+                </p>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

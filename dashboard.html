@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <div>
+
+        <h1>
+            Dashboard
+        </h1>
+
+        <p>
+            Welcome back, {{ user.name }}
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="stat-card income">
+
+        <span>
+            💰 Total Income
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(values.salary) }}
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card expense-card">
+
+        <span>
+            💸 Total Expense
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(values.spent) }}
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card saving-card">
+
+        <span>
+            💵 Current Saving
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(saving) }}
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card budget-card">
+
+        <span>
+            🎯 Budget Limit
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(values.expense_limit) }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="info-card">
+
+        <span>
+            30% Saving Target
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(values.saving_target) }}
+        </strong>
+
+    </div>
+
+
+    <div class="info-card">
+
+        <span>
+            Remaining Budget
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(values.remaining) }}
+        </strong>
+
+    </div>
+
+    <div class="info-card">
+
+        <span>
+            Remaining Balance
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(remaining_balance) }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="info-card">
+
+        <span>
+            Budget Used
+        </span>
+
+        <strong>
+            {{ "%.1f"|format(values.percentage) }}%
+        </strong>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-grid">
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            <h3>
+                Expense Overview
+            </h3>
+
+        </div>
+
+        {% if categories %}
+
+            {% for category, amount in categories.items() %}
+
+                <div class="progress-row">
+
+                    <div>
+
+                        <span>
+                            {{ category }}
+                        </span>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(amount) }}
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+
+                        {% if values.spent > 0 %}
+
+                            <div
+                                style="width: {{ (amount / values.spent * 100)|round(1) }}%">
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+                No expenses added yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="panel">
+
+        <h3>
+            Budget Prediction
+        </h3>
+
+        <div class="circle">
+
+            {{ "%.0f"|format(values.percentage) }}%
+
+        </div>
+
+        <p>
+            Budget Used
+        </p>
+
+        <strong>
+            ₹{{ "%.2f"|format(values.spent) }}
+            /
+            ₹{{ "%.2f"|format(values.expense_limit) }}
+        </strong>
+
+        {% if values.percentage >= 70 %}
+
+            <div class="alert-box danger">
+
+                ⚠️
+                Budget limit is getting close.
+
+            </div>
+
+        {% else %}
+
+            <div class="alert-box success">
+
+                ✓
+                Your spending is within the budget.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-grid">
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            <h3>
+                Recent Expenses
+            </h3>
+
+            <a href="{{ url_for('expenses') }}">
+                View All
+            </a>
+
+        </div>
+
+        {% if recent_expenses %}
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Date & Time
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Reason
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for expense in recent_expenses %}
+
+                    <tr>
+
+                        <td>
+                            {{ expense.spent_at.strftime("%d-%m-%Y %I:%M %p") }}
+                        </td>
+
+                        <td>
+                            {{ expense.category }}
+                        </td>
+
+                        <td>
+                            {{ expense.reason }}
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format(expense.amount) }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            No recent expenses.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="panel">
+
+        <h3>
+            Recent Savings
+        </h3>
+
+        {% if recent_savings %}
+
+            {% for item in recent_savings %}
+
+                <div class="saving-item">
+
+                    <div>
+
+                        <strong>
+                            {% if item.action == "add" %}
+                                + ₹{{ "%.2f"|format(item.amount) }}
+                            {% else %}
+                                - ₹{{ "%.2f"|format(item.amount) }}
+                            {% endif %}
+                        </strong>
+
+                        <small>
+                            {{ item.reason }}
+                        </small>
+
+                    </div>
+
+                    <span>
+                        {{ item.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+                No saving transactions.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

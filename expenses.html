@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <div>
+
+        <h1>
+            Expense List
+        </h1>
+
+        <p>
+            Search, filter and manage your expenses.
+        </p>
+
+    </div>
+
+    <a class="primary-btn small"
+       href="{{ url_for('expense') }}">
+        + Add Expense
+    </a>
+
+</div>
+
+
+<div class="filter-panel">
+
+    <form method="GET">
+
+        <input
+            name="search"
+            value="{{ search }}"
+            placeholder="Search reason or description"
+        >
+
+        <select name="category">
+
+            <option value="">
+                All Categories
+            </option>
+
+            <option
+                value="Food"
+                {% if category == "Food" %}selected{% endif %}>
+                Food
+            </option>
+
+            <option
+                value="Transport"
+                {% if category == "Transport" %}selected{% endif %}>
+                Transport
+            </option>
+
+            <option
+                value="Shopping"
+                {% if category == "Shopping" %}selected{% endif %}>
+                Shopping
+            </option>
+
+            <option
+                value="Bills"
+                {% if category == "Bills" %}selected{% endif %}>
+                Bills
+            </option>
+
+            <option
+                value="Education"
+                {% if category == "Education" %}selected{% endif %}>
+                Education
+            </option>
+
+            <option
+                value="Medical"
+                {% if category == "Medical" %}selected{% endif %}>
+                Medical
+            </option>
+
+            <option
+                value="Entertainment"
+                {% if category == "Entertainment" %}selected{% endif %}>
+                Entertainment
+            </option>
+
+        </select>
+
+        <button class="primary-btn">
+            Filter
+        </button>
+
+    </form>
+
+</div>
+
+
+<div class="panel">
+
+    {% if expenses %}
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Date & Time
+                    </th>
+
+                    <th>
+                        Category
+                    </th>
+
+                    <th>
+                        Reason
+                    </th>
+
+                    <th>
+                        Description
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for expense in expenses %}
+
+                <tr>
+
+                    <td>
+                        {{ expense.spent_at.strftime("%d-%m-%Y %I:%M %p") }}
+                    </td>
+
+                    <td>
+                        <span class="tag">
+                            {{ expense.category }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ expense.reason }}
+                    </td>
+
+                    <td>
+                        {{ expense.description or "-" }}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(expense.amount) }}
+                    </td>
+
+                    <td>
+
+                        <a class="action edit"
+                           href="{{ url_for(
+                               'edit_expense',
+                               expense_id=expense.id
+                           ) }}">
+                            Edit
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'delete_expense',
+                                expense_id=expense.id
+                            ) }}"
+                            style="display:inline"
+                            onsubmit="return confirm(
+                                'Delete this expense?'
+                            );">
+
+                            <button
+                                class="action delete">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+        <div class="empty">
+
+            No expenses found.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

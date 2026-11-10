@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <div>
+
+        <h1>
+            Reports & Analytics
+        </h1>
+
+        <p>
+            Understand your spending patterns.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="stat-card expense-card">
+
+        <span>
+            Total Expense
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(total) }}
+        </strong>
+
+    </div>
+
+    <div class="stat-card budget-card">
+
+        <span>
+            Categories
+        </span>
+
+        <strong>
+            {{ category_totals|length }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-grid">
+
+    <div class="panel">
+
+        <h2>
+            Category Analysis
+        </h2>
+
+        {% if category_totals %}
+
+            {% for category, amount in category_totals.items() %}
+
+                <div class="progress-row">
+
+                    <div>
+
+                        <span>
+                            {{ category }}
+                        </span>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(amount) }}
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div
+                            style="width:
+                            {{ category_percentages[category] }}%">
+                        </div>
+
+                    </div>
+
+                    <small>
+                        {{ "%.1f"|format(
+                            category_percentages[category]
+                        ) }}%
+                    </small>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+                No analytics data.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="panel">
+
+        <h2>
+            Monthly Trend
+        </h2>
+
+        {% if monthly_totals %}
+
+            {% for month, amount in monthly_totals.items() %}
+
+                <div class="month-row">
+
+                    <span>
+                        {{ month }}
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(amount) }}
+                    </strong>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+                No monthly data.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

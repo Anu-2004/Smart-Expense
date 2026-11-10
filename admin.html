@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <h2>
+
+        <i class="fa-solid fa-user-shield"></i>
+
+        Admin Panel
+
+    </h2>
+
+
+    <div class="stats-grid mt-4">
+
+        <div class="stat-card">
+
+            <i class="fa-solid fa-users"></i>
+
+            <small>Total Users</small>
+
+            <b>
+                {{ users|length }}
+            </b>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <i class="fa-solid fa-receipt"></i>
+
+            <small>Total Expenses</small>
+
+            <b>
+                {{ total_expenses }}
+            </b>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-responsive mt-4">
+
+        <table class="table table-hover">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Verified</th>
+                    <th>Admin</th>
+                    <th>Created</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for user in users %}
+
+                <tr>
+
+                    <td>
+                        {{ user.id }}
+                    </td>
+
+                    <td>
+                        {{ user.username }}
+                    </td>
+
+                    <td>
+                        {{ user.email }}
+                    </td>
+
+                    <td>
+
+                        {% if user.is_verified %}
+
+                        <span class="badge bg-success">
+                            Yes
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-warning">
+                            No
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if user.is_admin %}
+
+                        <span class="badge bg-primary">
+                            Admin
+                        </span>
+
+                        {% else %}
+
+                        No
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        {{ user.created_at.strftime("%d-%m-%Y") }}
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
