@@ -876,12 +876,14 @@ def dashboard():
         alert=alert
     )
 
-
 # =========================================================
 # ADD EXPENSE
 # =========================================================
 
-@app.route("/expense", methods=["GET", "POST"])
+@app.route(
+    "/expense",
+    methods=["GET", "POST"]
+)
 @login_required
 def expense():
 
@@ -889,53 +891,127 @@ def expense():
 
     if request.method == "POST":
 
-        amount_text = request.form.get("amount", "0")
-        category = request.form.get("category", "Other")
-        reason = request.form.get("reason", "").strip()
-        description = request.form.get("description", "").strip()
+        amount_text = request.form.get(
+            "amount",
+            "0"
+        )
+
+        category = request.form.get(
+            "category",
+            "Other"
+        )
+
+        reason = request.form.get(
+            "reason",
+            ""
+        ).strip()
+
+        description = request.form.get(
+            "description",
+            ""
+        ).strip()
 
         try:
-            amount = float(amount_text)
-        except (ValueError, TypeError):
+
+            amount = float(
+                amount_text
+            )
+
+        except ValueError:
+
             amount = 0
 
         if amount <= 0:
-            flash("Enter a valid expense amount.", "danger")
-            return redirect(url_for("expense"))
 
-        if not reason:
-            flash("Please enter the expense reason.", "danger")
-            return redirect(url_for("expense"))
-
-        try:
-            new_expense = Expense(
-                user_id=user.id,
-                amount=amount,
-                category=category,
-                reason=reason,
-                description=description,
-                spent_at=current_time()
+            flash(
+                "Enter a valid expense amount.",
+                "danger"
             )
 
-            db.session.add(new_expense)
-            db.session.commit()
+            return redirect(
+                url_for("expense")
+            )
 
-            create_budget_alert(user)
+        if not reason:
 
-            flash("Expense added successfully.", "success")
+            flash(
+                "Please enter the expense reason.",
+                "danger"
+            )
 
-            return redirect(url_for("dashboard"))
+            return redirect(
+                url_for("expense")
+            )
 
-        except Exception:
-            db.session.rollback()
-            app.logger.exception("Add Expense Error")
-            flash("Unable to add expense. Please try again.", "danger")
-            return redirect(url_for("expense"))
+        values_before = budget_values(
+            user
+        )
 
-    return render_template("expense.html", user=user)
+        projected_spent = (
+            values_before["spent"]
+            + amount
+        )
 
+        limit = values_before[
+            "expense_limit"
+        ]
 
-# =========================================================
+        crossed_70 = (
+            limit > 0
+            and values_before["spent"] < limit * 0.70
+            and projected_spent >= limit * 0.70
+        )
+
+        if crossed_70 and not reason:
+
+            flash(
+                "Reason is required when crossing 70% budget.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("expense")
+            )
+
+        new_expense = Expense(
+            user_id=user.id,
+            amount=amount,
+            category=category,
+            reason=reason,
+            description=description,
+            spent_at=current_time()
+        )
+
+        db.session.add(
+            new_expense
+        )
+
+        db.session.commit()
+
+        alert = create_budget_alert(
+            user
+        )
+
+        if (
+            alert["percentage"] >= 70
+            and reason
+        ):
+
+            pass
+
+        flash(
+            "Expense added successfully.",
+            "success"
+        )
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    return render_template(
+        "expense.html",
+        user=user
+    )
 
 # =========================================================
 # MULTIPLE EXPENSE
@@ -1367,8 +1443,6 @@ def mark_notifications_read():
         url_for("notifications")
     )
 
-
-
 # =========================================================
 # ANALYTICS
 # =========================================================
@@ -1379,57 +1453,59 @@ def analytics():
 
     user = get_current_user()
 
-    try:
-        expenses = Expense.query.filter_by(
-            user_id=user.id
-        ).all()
+    expenses = Expense.query.filter_by(
+        user_id=user.id
+    ).all()
 
-        category_totals = {}
-        monthly_totals = {}
+    category_totals = {}
 
-        for expense in expenses:
+    monthly_totals = {}
 
-            category = expense.category or "Other"
+    for expense in expenses:
 
-            category_totals[category] = (
-                category_totals.get(category, 0)
-                + float(expense.amount or 0)
-            )
+        category_totals[
+            expense.category
+        ] = category_totals.get(
+            expense.category,
+            0
+        ) + expense.amount
 
-            if expense.spent_at:
-
-                month = expense.spent_at.strftime("%Y-%m")
-
-                monthly_totals[month] = (
-                    monthly_totals.get(month, 0)
-                    + float(expense.amount or 0)
-                )
-
-        total = sum(category_totals.values())
-
-        category_percentages = {}
-
-        for key, value in category_totals.items():
-
-            category_percentages[key] = (
-                (value / total) * 100 if total > 0 else 0
-            )
-
-        return render_template(
-            "analytics.html",
-            category_totals=category_totals,
-            category_percentages=category_percentages,
-            monthly_totals=monthly_totals,
-            total=total
+        month = expense.spent_at.strftime(
+            "%Y-%m"
         )
 
-    except Exception:
-        app.logger.exception("Analytics Error")
-        flash("Unable to load analytics.", "danger")
-        return redirect(url_for("dashboard"))
+        monthly_totals[
+            month
+        ] = monthly_totals.get(
+            month,
+            0
+        ) + expense.amount
 
+    total = sum(
+        category_totals.values()
+    )
 
-# =========================================================
+    category_percentages = {}
+
+    for key, value in category_totals.items():
+
+        if total > 0:
+
+            category_percentages[key] = (
+                value / total
+            ) * 100
+
+        else:
+
+            category_percentages[key] = 0
+
+    return render_template(
+        "analytics.html",
+        category_totals=category_totals,
+        category_percentages=category_percentages,
+        monthly_totals=monthly_totals,
+        total=total
+    )
 
 # =========================================================
 # BUDGET PREDICTION
